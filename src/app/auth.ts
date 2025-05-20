@@ -2,8 +2,8 @@
 import NextAuth, { DefaultSession, NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
-import User from './models/User';
-import dbConnect from './utils/db';
+import User from '@/app/models/User';
+import connectDB from '@/app/lib/db';
 import bcrypt from 'bcryptjs';
 
 // Extend the built-in session types
@@ -43,7 +43,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password are required');
         }
 
-        await dbConnect();
+        await connectDB();
         const user = await User.findOne({ email: credentials.email });
 
         if (!user) {
