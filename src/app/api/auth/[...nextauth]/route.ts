@@ -1,12 +1,12 @@
 // src/app/api/auth/register/route.ts
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import User from '@/app/models/User';
-import connectDB from '@/app/lib/db';
+import User from '@/models/User';
+import dbConnect from '@/utils/db';
 
 export async function POST(request: Request) {
   try {
-    await connectDB();
+    await dbConnect();
     const { name, email, phone, password, userType } = await request.json();
 
     // Check if user exists

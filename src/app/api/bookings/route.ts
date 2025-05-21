@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/app/lib/db';
-import Booking from '@/app/models/Booking';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-
-interface CustomJwtPayload extends JwtPayload {
-  userId: string;
-}
+import connectDB from '@/lib/db';
+import Booking from '@/lib/models/Booking';
+import jwt from 'jsonwebtoken';
 
 // Middleware to verify JWT token
-const verifyToken = (req: Request): CustomJwtPayload => {
+const verifyToken = (req: Request) => {
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     throw new Error('No token provided');
@@ -16,11 +12,7 @@ const verifyToken = (req: Request): CustomJwtPayload => {
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!);
-    if (typeof decoded === 'string' || !('userId' in decoded)) {
-      throw new Error('Invalid token format');
-    }
-    return decoded as CustomJwtPayload;
+    return jwt.verify(token, process.env.NEXTAUTH_SECRET!);
   } catch (error) {
     throw new Error('Invalid token');
   }

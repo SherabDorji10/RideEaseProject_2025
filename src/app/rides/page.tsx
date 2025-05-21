@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FaMapMarkerAlt, FaCalendarAlt, FaCar, FaUser, FaMoneyBillWave } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt, FaCar, FaMoneyBillWave } from 'react-icons/fa';
 import DashboardLayout from '../components/common/DashboardLayout';
 
 interface Booking {
@@ -48,8 +48,8 @@ export default function RideHistory() {
         // Filter only confirmed bookings
         const confirmedBookings = data.bookings ? data.bookings.filter((booking: Booking) => booking.status === 'confirmed') : [];
         setBookings(confirmedBookings);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
         setBookings([]); // Set empty array on error
       } finally {
         setLoading(false);
