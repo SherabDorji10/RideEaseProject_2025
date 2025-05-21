@@ -118,7 +118,7 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               FAQs
-            </Link>
+        </Link>
         <Link 
           href="#contact"
               className="block px-3 py-2 text-white hover:text-gray-200"
