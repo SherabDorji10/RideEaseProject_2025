@@ -247,9 +247,7 @@ export const BHUTAN_LOCATIONS = {
       'Chele La Pass',
       'Katsho Village',
       'Uesu Village',
-      'Haa Town',
-      'Dochula Pass',
-      'Haa River'
+      'Haa Town'
     ]
   }
-};
+}; 

@@ -1,6 +1,7 @@
 // src/app/(main)/register/page.tsx
 'use client';
 
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';

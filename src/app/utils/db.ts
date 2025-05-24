@@ -1,4 +1,3 @@
-// src/utils/db.ts
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
@@ -50,4 +49,4 @@ async function dbConnect() {
   return cached.conn;
 }
 
-export default dbConnect;
+export default dbConnect; 

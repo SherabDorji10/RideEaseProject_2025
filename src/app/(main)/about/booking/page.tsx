@@ -1,7 +1,8 @@
 // src/app/(main)/booking/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useState} from 'react';
 import { useRouter } from 'next/navigation';
 import { FaTaxi, FaBus, FaMapMarkerAlt, FaFlagCheckered, FaCalendarDay, FaUsers, FaSearch, FaArrowRight, FaSpinner } from 'react-icons/fa';
 
