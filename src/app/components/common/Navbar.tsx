@@ -83,7 +83,7 @@ export default function Navbar() {
                   Login
                 </Link>
                 <Link
-                  href="/register"
+                  href="/signup"
                   className="bg-white text-emerald-800 px-4 py-2 rounded-md hover:bg-gray-100"
                 >
                   Register
@@ -163,7 +163,7 @@ export default function Navbar() {
                   Login
                 </Link>
                 <Link
-                  href="/register"
+                  href="/signup"
                   className="block px-3 py-2 text-white hover:text-gray-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
