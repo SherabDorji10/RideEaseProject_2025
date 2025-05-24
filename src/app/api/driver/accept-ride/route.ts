@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Booking from '@/lib/models/Booking';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // Middleware to verify JWT token
-const verifyToken = (req: Request) => {
+const verifyToken = (req: Request): string | JwtPayload => {
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     throw new Error('No token provided');
@@ -18,13 +18,18 @@ const verifyToken = (req: Request) => {
   }
 };
 
+// Type guard function to check if user is JwtPayload with a 'role' property
+function isJwtPayloadWithRole(user: any): user is JwtPayload & { role: string, userId: string } {
+  return typeof user === 'object' && user !== null && 'role' in user && typeof user.role === 'string';
+}
+
 export async function POST(req: Request) {
   try {
     await connectDB();
     const user = verifyToken(req);
 
     // Verify that the user is a driver
-    if (user.role !== 'driver') {
+    if (!isJwtPayloadWithRole(user) || user.role !== 'driver') {
       return NextResponse.json(
         { message: 'Only drivers can accept rides' },
         { status: 403 }

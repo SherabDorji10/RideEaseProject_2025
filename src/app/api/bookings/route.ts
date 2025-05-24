@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Booking from '@/lib/models/Booking';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // Middleware to verify JWT token
-const verifyToken = (req: Request) => {
+const verifyToken = (req: Request): string | JwtPayload => {
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     throw new Error('No token provided');
@@ -18,11 +18,25 @@ const verifyToken = (req: Request) => {
   }
 };
 
+// Type guard function to check if user is JwtPayload with a 'userId' property
+function isJwtPayloadWithUserId(user: any): user is JwtPayload & { userId: string } {
+  return typeof user === 'object' && user !== null && 'userId' in user && typeof user.userId === 'string';
+}
+
 // Create a new booking
 export async function POST(req: Request) {
   try {
     await connectDB();
     const user = verifyToken(req);
+    
+    // Check if user has userId property
+    if (!isJwtPayloadWithUserId(user)) {
+      return NextResponse.json(
+        { message: 'Invalid user token' },
+        { status: 401 }
+      );
+    }
+    
     const bookingData = await req.json();
 
     const booking = await Booking.create({
@@ -48,6 +62,14 @@ export async function GET(req: Request) {
   try {
     await connectDB();
     const user = verifyToken(req);
+
+    // Check if user has userId property
+    if (!isJwtPayloadWithUserId(user)) {
+      return NextResponse.json(
+        { message: 'Invalid user token' },
+        { status: 401 }
+      );
+    }
 
     const bookings = await Booking.find({ user: user.userId })
       .sort({ createdAt: -1 });

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import User from '@/lib/models/User';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // Middleware to verify JWT token
-const verifyToken = (req: Request) => {
+const verifyToken = (req: Request): string | JwtPayload => {
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     throw new Error('No token provided');
@@ -18,10 +18,23 @@ const verifyToken = (req: Request) => {
   }
 };
 
+// Type guard function to check if user is JwtPayload with a 'userId' property
+function isJwtPayloadWithUserId(user: any): user is JwtPayload & { userId: string } {
+  return typeof user === 'object' && user !== null && 'userId' in user && typeof user.userId === 'string';
+}
+
 export async function GET(req: Request) {
   try {
     await connectDB();
     const user = verifyToken(req);
+
+    // Check if user has userId property
+    if (!isJwtPayloadWithUserId(user)) {
+      return NextResponse.json(
+        { message: 'Invalid user token' },
+        { status: 401 }
+      );
+    }
 
     // Find user by ID
     const userData = await User.findById(user.userId)
@@ -49,6 +62,15 @@ export async function PUT(req: Request) {
   try {
     await connectDB();
     const user = verifyToken(req);
+    
+    // Check if user has userId property
+    if (!isJwtPayloadWithUserId(user)) {
+      return NextResponse.json(
+        { message: 'Invalid user token' },
+        { status: 401 }
+      );
+    }
+    
     const data = await req.json();
 
     // Find user by ID
