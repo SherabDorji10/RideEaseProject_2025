@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Booking from '@/lib/models/Booking';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // Middleware to verify JWT token
-const verifyToken = (req: Request) => {
+const verifyToken = (req: Request): string | JwtPayload => {
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     throw new Error('No token provided');
@@ -18,14 +18,20 @@ const verifyToken = (req: Request) => {
   }
 };
 
+// Type guard function to check if user is JwtPayload with a 'role' property
+function isJwtPayloadWithRole(user: any): user is JwtPayload & { role: string } {
+  return typeof user === 'object' && user !== null && 'role' in user && typeof user.role === 'string';
+}
+
 // Get all pending bookings that haven't been accepted by any driver
 export async function GET(req: Request) {
   try {
     await connectDB();
+
     const user = verifyToken(req);
 
-    // Verify that the user is a driver
-    if (user.role !== 'driver') {
+    // Verify that the user is a driver safely
+    if (!isJwtPayloadWithRole(user) || user.role !== 'driver') {
       return NextResponse.json(
         { message: 'Only drivers can access pending bookings' },
         { status: 403 }
@@ -37,10 +43,10 @@ export async function GET(req: Request) {
       status: 'pending',
       driver: { $exists: false }
     })
-    .select('pickupLocation dropoffLocation pickupTime status price vehicleType vehicleName passengers createdAt')
-    .sort({ createdAt: -1 })
-    .populate('user', 'name email phone')
-    .lean();
+      .select('pickupLocation dropoffLocation pickupTime status price vehicleType vehicleName passengers createdAt')
+      .sort({ createdAt: -1 })
+      .populate('user', 'name email phone')
+      .lean();
 
     // Ensure all required fields are present
     const formattedBookings = pendingBookings.map(booking => ({
@@ -59,4 +65,4 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   }
-} 
+}
