@@ -1,48 +1,52 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
+// Check if MongoDB URI is defined
+if (!process.env.MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env');
 }
 
-interface MongooseCache {
+// Define the mongoose connection cache interface
+interface MongooseConnection {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
 
+// Add mongoose to the NodeJS global type
 declare global {
-  // eslint-disable-next-line no-var
-  var mongoose: MongooseCache | undefined;
+  var mongooseConnection: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
 }
 
-const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
-global.mongoose = cached;
+// Initialize the connection cache
+if (!global.mongooseConnection) {
+  global.mongooseConnection = { conn: null, promise: null };
+}
 
-
-async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
+/**
+ * Connect to MongoDB using mongoose
+ */
+async function connectDB(): Promise<typeof mongoose> {
+  // If we have a connection, return it
+  if (global.mongooseConnection.conn) {
+    return global.mongooseConnection.conn;
   }
 
-  if (!cached.promise) {
-    const opts = {
+  // If we don't have a promise to connect yet, create one
+  if (!global.mongooseConnection.promise) {
+    global.mongooseConnection.promise = mongoose.connect(process.env.MONGODB_URI!, {
       bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      return mongoose;
     });
   }
 
   try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
+    // Wait for the connection
+    const mongoose = await global.mongooseConnection.promise;
+    global.mongooseConnection.conn = mongoose;
+    return mongoose;
+  } catch (error) {
+    // If there's an error, clear the promise so we can try again
+    global.mongooseConnection.promise = null;
+    throw error;
   }
-
-  return cached.conn;
 }
 
-export default connectDB; 
+export default connectDB;
