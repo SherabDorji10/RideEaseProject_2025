@@ -6,24 +6,19 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env');
 }
 
-// Define the type for our cached connection
-type MongooseCache = {
+interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
-};
+}
 
-// Add mongoose to the NodeJS global type
 declare global {
+  // eslint-disable-next-line no-var
   var mongoose: MongooseCache | undefined;
 }
 
-// Initialize the cached connection
-let cached: MongooseCache = global.mongoose || { conn: null, promise: null };
+const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
+global.mongoose = cached;
 
-// Set the global mongoose cache
-if (!global.mongoose) {
-  global.mongoose = cached;
-}
 
 async function connectDB() {
   if (cached.conn) {
