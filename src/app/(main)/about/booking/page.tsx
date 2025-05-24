@@ -4,7 +4,7 @@
 import { useEffect } from 'react';
 import { useState} from 'react';
 import { useRouter } from 'next/navigation';
-import { FaTaxi, FaBus, FaMapMarkerAlt, FaFlagCheckered, FaCalendarDay, FaUsers, FaSearch, FaArrowRight, FaSpinner } from 'react-icons/fa';
+import { FaTaxi, FaBus, FaMapMarkerAlt, FaFlagCheckered, FaUsers, FaSpinner, FaClock } from 'react-icons/fa';
 
 // Mock vehicle data - replace with your actual data source
 const vehicles = [
