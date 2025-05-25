@@ -1,14 +1,15 @@
 // src/app/(main)/login/page.tsx
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 import Link from 'next/link';
 
-export default function LoginPage() {
+// Client component that uses authentication
+function LoginPageClient() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -171,5 +172,14 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Export a wrapper component with Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[calc(100vh-140px)] flex items-center justify-center">Loading...</div>}>
+      <LoginPageClient />
+    </Suspense>
   );
 }
