@@ -112,7 +112,6 @@ userSchema.methods.comparePassword = async function(candidatePassword: string): 
 };
 
 // Create indexes
-userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ phone: 1 });
 
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
