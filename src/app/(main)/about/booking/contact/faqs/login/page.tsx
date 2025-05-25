@@ -1,28 +1,19 @@
 // src/app/(main)/login/page.tsx
 'use client';
 
-import { useEffect, Suspense } from 'react';
 import { useState } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 import Link from 'next/link';
 
-function LoginForm() {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
   const router = useRouter();
-
-  // Redirect if already logged in
-  useEffect(() => {
-    if (session) {
-      router.push('/dashboard');
-    }
-  }, [session, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,9 +39,7 @@ function LoginForm() {
     }
   };
 
-  if (session) {
-    return null; // or loading spinner while redirecting
-  }
+  // No session check here anymore
 
   return (
     <div className="min-h-[calc(100vh-140px)] flex items-center justify-center p-4">
@@ -171,13 +160,5 @@ function LoginForm() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-[calc(100vh-140px)] flex items-center justify-center"><p className="text-lg font-medium">Loading login form...</p></div>}>
-      <LoginForm />
-    </Suspense>
   );
 }

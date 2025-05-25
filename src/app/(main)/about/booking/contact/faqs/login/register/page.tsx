@@ -1,14 +1,13 @@
 // src/app/(main)/register/page.tsx
 'use client';
 
-import { useEffect, Suspense } from 'react';
 import { useState } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash, FaSpinner, FaArrowLeft } from 'react-icons/fa';
 import Link from 'next/link';
 
-function RegisterForm() {
+export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -22,15 +21,7 @@ function RegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
   const router = useRouter();
-
-  // Redirect if already logged in
-  useEffect(() => {
-    if (session) {
-      router.push('/');
-    }
-  }, [session, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -105,9 +96,7 @@ function RegisterForm() {
     }
   };
 
-  if (session) {
-    return null; // or loading spinner while redirecting
-  }
+  // No session check here anymore
 
   return (
     <div className="min-h-[calc(100vh-140px)] flex items-center justify-center p-4">
@@ -372,10 +361,4 @@ function RegisterForm() {
   );
 }
 
-export default function RegisterPage() {
-  return (
-    <Suspense fallback={<div className="min-h-[calc(100vh-140px)] flex items-center justify-center"><p className="text-lg font-medium">Loading registration form...</p></div>}>
-      <RegisterForm />
-    </Suspense>
-  );
-}
+
