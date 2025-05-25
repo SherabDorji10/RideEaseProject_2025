@@ -1,14 +1,15 @@
 // src/app/(main)/register/page.tsx
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash, FaSpinner, FaArrowLeft } from 'react-icons/fa';
 import Link from 'next/link';
 
-export default function RegisterPage() {
+// Client component wrapper to handle authentication
+function RegisterPageClient() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -22,7 +23,7 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  const session = useSession()?.data || null;
   const router = useRouter();
 
   // Redirect if already logged in
@@ -369,5 +370,14 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Export a wrapper component with Suspense boundary
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[calc(100vh-140px)] flex items-center justify-center">Loading...</div>}>
+      <RegisterPageClient />
+    </Suspense>
   );
 }
