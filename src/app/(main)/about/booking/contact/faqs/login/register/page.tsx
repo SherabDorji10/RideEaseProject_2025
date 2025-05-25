@@ -33,7 +33,9 @@ export default function RegisterPage() {
     
     if (!formData.name.trim()) newErrors.name = 'Full name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = 'Please enter a valid email address';
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    else if (!/^[0-9]{10}$/.test(formData.phone)) newErrors.phone = 'Please enter a valid 10-digit phone number';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -58,8 +60,26 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleNextStep = () => {
+    if (validateStep1()) {
+      setStep(2);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // If on step 1, move to step 2 instead of submitting
+    if (step === 1) {
+      handleNextStep();
+      return;
+    }
+    
+    // Validate step 2 before submission
+    if (!validateStep2()) {
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -113,6 +133,12 @@ export default function RegisterPage() {
                 {errors.form}
               </div>
             )}
+
+            {/* Step indicator */}
+            <div className="mb-6 flex justify-between">
+              <div className={`w-1/2 text-center pb-2 ${step === 1 ? 'border-b-2 border-emerald-500 text-emerald-600 font-medium' : 'border-b text-gray-400'}`}>Step 1: Personal Info</div>
+              <div className={`w-1/2 text-center pb-2 ${step === 2 ? 'border-b-2 border-emerald-500 text-emerald-600 font-medium' : 'border-b text-gray-400'}`}>Step 2: Security</div>
+            </div>
 
             {step === 1 && (
               <div id="step1">
@@ -173,13 +199,14 @@ export default function RegisterPage() {
                   </div>
                 </div>
                 
-                <button
-                  type="button"
-                  onClick={() => validateStep1() && setStep(2)}
-                  className="w-full px-6 py-4 bg-green-300 hover:bg-green-500 text-black rounded-lg font-bold transition-all shadow-md hover:shadow-lg mt-6"
-                >
-                  Continue
-                </button>
+                <div className="flex items-center space-x-4 pt-4">
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             )}
 
