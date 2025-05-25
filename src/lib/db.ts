@@ -13,19 +13,25 @@ interface MongooseConnection {
 
 // Add mongoose to the NodeJS global type
 declare global {
-  var mongooseConnection: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
+  var mongooseConnection: MongooseConnection;
 }
 
 // Initialize the connection cache
-if (!global.mongooseConnection) {
-  global.mongooseConnection = { conn: null, promise: null };
+const globalWithMongoose = global as typeof globalThis & {
+  mongooseConnection: MongooseConnection;
+};
+
+if (!globalWithMongoose.mongooseConnection) {
+  globalWithMongoose.mongooseConnection = { conn: null, promise: null };
 }
 
 /**
  * Connect to MongoDB using mongoose
  */
 async function connectDB(): Promise<typeof mongoose> {
-  const cached = global.mongooseConnection;
+  // Use the properly typed global variable
+  const cached = globalWithMongoose.mongooseConnection;
+  
   // If we have a connection, return it
   if (cached.conn) {
     return cached.conn;
