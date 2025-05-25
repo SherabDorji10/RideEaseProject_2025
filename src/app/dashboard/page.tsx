@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaCar, FaHistory, FaMapMarkerAlt, FaClock, FaCheck, FaSpinner, FaUsers } from 'react-icons/fa';
 import DashboardLayout from '../components/common/DashboardLayout';
@@ -19,7 +19,7 @@ interface Booking {
   createdAt: string;
 }
 
-export default function Dashboard() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -171,3 +171,17 @@ export default function Dashboard() {
     </DashboardLayout>
   );
 } 
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={
+      <DashboardLayout role="passenger">
+        <div className="flex items-center justify-center h-64">
+          <FaSpinner className="animate-spin text-4xl text-indigo-600" />
+        </div>
+      </DashboardLayout>
+    }>
+      <DashboardContent />
+    </Suspense>
+  );
+}
