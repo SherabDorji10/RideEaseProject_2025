@@ -114,15 +114,28 @@ export default function BookingReceipt({ booking }: BookingReceiptProps) {
 
           {/* Pickup Time */}
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Pickup Time</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Pickup Details</h3>
+            <div className="space-y-4">
               <div>
                 <p className="text-sm text-gray-600">Date</p>
-                <p className="text-gray-900">{new Date(booking.pickupDate).toLocaleDateString()}</p>
+                <p className="text-gray-900">
+                  {new Date(booking.pickupDate).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Time</p>
-                <p className="text-gray-900">{booking.pickupTime}</p>
+                <p className="text-gray-900">
+                  {new Date(`2000-01-01T${booking.pickupTime}`).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                  })}
+                </p>
               </div>
             </div>
           </div>
@@ -159,7 +172,15 @@ export default function BookingReceipt({ booking }: BookingReceiptProps) {
           {/* Booking Date */}
           <div className="border-t border-gray-200 pt-6">
             <p className="text-sm text-gray-600">
-              Booked on {new Date(booking.createdAt).toLocaleString()}
+              Booked on {new Date(booking.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })} at {new Date(booking.createdAt).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+              })}
             </p>
           </div>
         </div>
