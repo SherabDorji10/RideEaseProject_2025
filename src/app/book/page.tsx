@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, Suspense } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import BookingForm from '../components/BookingForm';
 
@@ -26,9 +26,7 @@ export default function BookPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
-        <BookingForm />
-      </Suspense>
+      <BookingForm />
     </div>
   );
 } 
